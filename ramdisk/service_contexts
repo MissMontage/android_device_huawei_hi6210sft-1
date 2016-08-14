@@ -166,6 +166,9 @@ phone_huawei                              u:object_r:radio_service:s0
 # DTS2015091410126 jiayanhong/00176905 20150915 begin
 isms_interception                         u:object_r:radio_service:s0
 # DTS2015091410126 jiayanhong/00176905 20150915 end
+# DTS2015122305073 chenxiaoxuan00217940 20151223 begin
+ihwvsim                                   u:object_r:radio_service:s0
+# DTS2015122305073 chenxiaoxuan00217940 20151223 end
 # telephony services end
 
 # HwSystemManager services begin
@@ -200,6 +203,7 @@ pgservice                                               u:object_r:pgservice_ser
 hwsysresmanager                                         u:object_r:hwsysresmanager_service:s0
 #DTS2015082603024 liyu/00304948 20150826 end
 
+iostatsservice                                          u:object_r:iostatsservice_service:s0
 # fido authentication service
 fido_authenticator  u:object_r:fido_authenticator_service:s0
 # add s00356424 20151022 end
@@ -217,7 +221,13 @@ post.camera                                             u:object_r:mediaserver_s
 # multitask add a service 
 multi_task                                              u:object_r:hw_multitask_service:s0
 #DTS2015102201700 lijiechun/00101002 20151022 end
-#line 1 "device/hisi/common/sepolicy/common/service_contexts"
+
+Hwmedia.monitor u:object_r:hw_mediamonitor_service:s0
+# DTS2015102710904 qianpeng/00227536 20160307 begin
+vr_system                                               u:object_r:vr_system_service:s0
+# DTS2015102710904 qianpeng/00227536 20160307 end
+
+#line 1 "device/hisi/sepolicy/common/service_contexts"
 com.huawei.goldeneye                                    u:object_r:goldeneye_service:s0
 huawei.camera.cfgsvr					u:object_r:hwcamcfg_service:s0
 hwext_device_service					u:object_r:hwext_device_service:s0
@@ -234,6 +244,9 @@ vr_display                                             u:object_r:vr_service:s0
 tui                                                     u:object_r:tui_service:s0
 nonhardaccelpkgs                          u:object_r:nonhardaccelpkgs_service:s0
 jankshield                                u:object_r:jankshield_service:s0
+SysinfoService                            u:object_r:systeminfo_service:s0
 huawei.audioalgoservice                   u:object_r:mediaserver_service:s0
-#line 1 "device/hisi/common/sepolicy/hi6210sft/service_contexts"
-com.nokia.location.slpgwd                                            u:object_r:nokialoc_service:s0
+#line 1 "device/hisi/sepolicy/hi6250/service_contexts"
+#######HwAuthenticationService#########
+authentication_service u:object_r:authentication_service:s0
+

@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-LOCAL_PATH := device/HUAWEI/hi6210sft
+LOCAL_PATH := device/HUAWEI/hi6250
 
-TARGET_SCREEN_HEIGHT := 1280
-TARGET_SCREEN_WIDTH := 720
+TARGET_SCREEN_HEIGHT := 1920
+TARGET_SCREEN_WIDTH := 1080
 DEVICE_PACKAGE_OVERLAYS := $(LOCAL_PATH)/overlay
 
 # Copy prebuild kernel
@@ -26,50 +26,54 @@ PRODUCT_COPY_FILES += \
 
 # Ramdisk stuff
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/ramdisk/fstab.hi6210sft:root/fstab.hi6210sft \
-    $(LOCAL_PATH)/ramdisk/init.hi6210sft.rc:root/init.hi6210sft.rc \
-    $(LOCAL_PATH)/ramdisk/ueventd.hi6210sft.rc:root/ueventd.hi6210sft.rc \
+    $(LOCAL_PATH)/ramdisk/fstab.hi6250:root/fstab.hi6250 \
+    $(LOCAL_PATH)/ramdisk/init.hi6250.rc:root/init.hi6250.rc \
+    $(LOCAL_PATH)/ramdisk/ueventd.hi6250.rc:root/ueventd.hi6250.rc \
     $(LOCAL_PATH)/ramdisk/file_contexts:root/file_contexts \
     $(LOCAL_PATH)/ramdisk/init:root/init \
-    $(LOCAL_PATH)/ramdisk/init.5801.rc:root/init.5801.rc \
-    $(LOCAL_PATH)/ramdisk/init.6166.rc:root/init.6166.rc \
-    $(LOCAL_PATH)/ramdisk/init.10107.rc:root/init.10107.rc \
-    $(LOCAL_PATH)/ramdisk/init.51055.rc:root/init.51055.rc \
-    $(LOCAL_PATH)/ramdisk/init.102174.rc:root/init.102174.rc \
-    $(LOCAL_PATH)/ramdisk/init.142783.rc:root/init.142783.rc \
+    $(LOCAL_PATH)/ramdisk/init.4871.rc:root/init.4871.rc \
+    $(LOCAL_PATH)/ramdisk/init.6193.rc:root/init.6193.rc \
+    $(LOCAL_PATH)/ramdisk/init.51312.rc:root/init.51312.rc \
     $(LOCAL_PATH)/ramdisk/init.audio.rc:root/init.audio.rc \
+    $(LOCAL_PATH)/ramdisk/init.balong_modem.rc:root/init.balong_modem.rc \
     $(LOCAL_PATH)/ramdisk/init.chip.usb.rc:root/init.chip.usb.rc \
     $(LOCAL_PATH)/ramdisk/init.connectivity.bcm43xx.rc:root/init.connectivity.bcm43xx.rc \
-    $(LOCAL_PATH)/ramdisk/init.connectivity.hi110x.rc:root/init.connectivity.hi110x.rc \
+    $(LOCAL_PATH)/ramdisk/init.connectivity.bcm43455rc:root/init.connectivity.bcm43455.rc \
     $(LOCAL_PATH)/ramdisk/init.connectivity.rc:root/init.connectivity.rc \
+    $(LOCAL_PATH)/ramdisk/init.connectivity.gps.rc:root/init.connectivity.gps.rc \
+    $(LOCAL_PATH)/ramdisk/init.connectivity.hisi.rc:root/init.connectivity.hisi.rc \
     $(LOCAL_PATH)/ramdisk/init.device.rc:root/init.device.rc \
+    $(LOCAL_PATH)/ramdisk/init.environ.rc:root/init.environ.rc \
     $(LOCAL_PATH)/ramdisk/init.extmodem.rc:root/init.extmodem.rc \
     $(LOCAL_PATH)/ramdisk/init.hisi.rc:root/init.hisi.rc \
     $(LOCAL_PATH)/ramdisk/init.manufacture.rc:root/init.manufacture.rc \
     $(LOCAL_PATH)/ramdisk/init.performance.rc:root/init.performance.rc \
     $(LOCAL_PATH)/ramdisk/init.platform.rc:root/init.platform.rc \
+    $(LOCAL_PATH)/ramdisk/init.post-fs-data.rc:root/init.post-fs-data.rc \
     $(LOCAL_PATH)/ramdisk/init.protocol.rc:root/init.protocol.rc \
     $(LOCAL_PATH)/ramdisk/init.rc:root/init.rc \
-    $(LOCAL_PATH)/ramdisk/init.recovery.hi110x.rc:root/init.recovery.hi110x.rc \
-    $(LOCAL_PATH)/ramdisk/init.recovery.hi6210sft.rc:root/init.recovery.hi6210sft.rc \
+    $(LOCAL_PATH)/ramdisk/init.recovery.balong_modem.rc:root/init.recovery.balong_modem.rc \
+    $(LOCAL_PATH)/ramdisk/init.recovery.hisi.rc:root/init.recovery.hisi.rc \
+    $(LOCAL_PATH)/ramdisk/init.recovery.huawei.rc:root/init.recovery.huawei.rc \
     $(LOCAL_PATH)/ramdisk/init.tee.rc:root/init.tee.rc \
+    $(LOCAL_PATH)/ramdisk/init.trace.rc:root/init.trace.rc \
     $(LOCAL_PATH)/ramdisk/init.usb.rc:root/init.usb.rc \
+    $(LOCAL_PATH)/ramdisk/init.zygote32.rc:root/init.zygote32.rc \
     $(LOCAL_PATH)/ramdisk/init.zygote64_32.rc:root/init.zygote64_32.rc \
     $(LOCAL_PATH)/ramdisk/property_contexts:root/property_contexts \
     $(LOCAL_PATH)/ramdisk/seapp_contexts:root/seapp_contexts \
+    $(LOCAL_PATH)/ramdisk/selinux_version:root/selinux_version \
     $(LOCAL_PATH)/ramdisk/sepolicy:root/sepolicy \
     $(LOCAL_PATH)/ramdisk/service_contexts:root/service_contexts \
-    $(LOCAL_PATH)/ramdisk/ueventd.5801.rc:root/ueventd.5801.rc \
-    $(LOCAL_PATH)/ramdisk/ueventd.6166.rc:root/ueventd.6166.rc \
-    $(LOCAL_PATH)/ramdisk/ueventd.10107.rc:root/ueventd.10107.rc \
-    $(LOCAL_PATH)/ramdisk/ueventd.51055.rc:root/ueventd.51055.rc \
-    $(LOCAL_PATH)/ramdisk/ueventd.102174.rc:root/ueventd.102174.rc \
-    $(LOCAL_PATH)/ramdisk/ueventd.142783.rc:root/ueventd.142783.rc \
+    $(LOCAL_PATH)/ramdisk/ueventd.4871.rc:root/ueventd.4871.rc \
+    $(LOCAL_PATH)/ramdisk/ueventd.6193.rc:root/ueventd.6193.rc \
+    $(LOCAL_PATH)/ramdisk/ueventd.51312.rc:root/ueventd.51312.rc \
     $(LOCAL_PATH)/ramdisk/ueventd.rc:root/ueventd.rc \
     $(LOCAL_PATH)/ramdisk/sbin/adbd:root/sbin/adbd \
     $(LOCAL_PATH)/ramdisk/sbin/check_root:root/sbin/check_root \
     $(LOCAL_PATH)/ramdisk/sbin/hdbd:root/sbin/hdbd \
     $(LOCAL_PATH)/ramdisk/sbin/healthd:root/sbin/healthd \
+    $(LOCAL_PATH)/ramdisk/sbin/hw_crit_service_sys:root/sbin/hw_crit_service_sys \
     $(LOCAL_PATH)/ramdisk/sbin/hw_ueventd:root/sbin/hw_ueventd \
     $(LOCAL_PATH)/ramdisk/sbin/logctl_service:root/sbin/logctl_service \
     $(LOCAL_PATH)/ramdisk/sbin/ntfs-3gd:root/sbin/ntfs-3gd \
@@ -82,7 +86,7 @@ PRODUCT_COPY_FILES += \
 
 # Add openssh support for remote debugging and job submission
 PRODUCT_PACKAGES += ssh sftp scp sshd ssh-keygen sshd_config start-ssh uim wpa_supplicant
-
+.rc
 # Build and run only ART
 PRODUCT_RUNTIMES := runtime_libart_default
 
@@ -102,7 +106,7 @@ PRODUCT_PACKAGES += libion
 PRODUCT_PACKAGES += gatord
 
 # Build gralloc for Juno
-PRODUCT_PACKAGES += gralloc.hi6210sft
+PRODUCT_PACKAGES += gralloc.hi6250
 
 # Include ION tests
 PRODUCT_PACKAGES += iontest \
@@ -161,7 +165,7 @@ PRODUCT_PACKAGES += \
      tinycap \
      tinymix \
      tinypcminfo \
-     sound_trigger.primary.hi6210sft \
+     sound_trigger.primary.hi6250 \
      libion.huawei \
      libwpa_client \
      wpa_supplicant \

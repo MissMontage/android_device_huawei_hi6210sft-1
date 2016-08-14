@@ -3,8 +3,8 @@ on early-init
 on init
 	chmod 0660 /dev/maxim_smartpa_dev
 	chown media media /dev/maxim_smartpa_dev
-	chmod 0660 /dev/speakerID
-	chown media media /dev/speakerID
+	chmod 0660 /dev/deviceboxID
+	chown media media /dev/deviceboxID
 	chmod 0660 /dev/hi6402_hifi_misc
 	chown media media /dev/hi6402_hifi_misc
 	chmod 0660 /dev/ttyAMA0
@@ -15,6 +15,8 @@ on init
 	chown media media /dev/tfa9895
 	chmod 0660 /dev/ear_pa
 	chown media media /dev/ear_pa
+	chmod 0660 /dev/soundtrigger_dma_drv
+	chown media media /dev/soundtrigger_dma_drv
 
 on early-fs
 
@@ -27,7 +29,12 @@ on post-fs-data
 on early-boot
 
 on boot
-
+	chmod 0660 /proc/key_mask
+	chown root system /proc/key_mask
+	chmod 0440 /proc/audio/hi64xxdump
+	chown root system /proc/audio/hi64xxdump
+	chmod 0660 /proc/hi64xxdbg/hi64xxdebug
+	chown root system /proc/hi64xxdbg/hi64xxdebug
 
 
 

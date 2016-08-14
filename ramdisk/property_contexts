@@ -80,10 +80,11 @@ dalvik.                 u:object_r:dalvik_prop:s0
 persist.hw.power.shutdown       u:object_r:bootanim_prop:s0
 
 
-#line 1 "device/hisi/common/sepolicy/common/property_contexts"
+#line 1 "device/hisi/sepolicy/common/property_contexts"
 # hisi property
 
 trustedcore_sfs_property	u:object_r:teecd_prop:s0
+thread_ca_server_work_property  u:object_r:teecd_prop:s0
 ctl.logserver			u:object_r:logserver_prop:s0
 ctl.logctl_service		u:object_r:logcat_prop:s0
 ctl.logcat_service		u:object_r:logcat_prop:s0
@@ -108,7 +109,9 @@ ctl.gpsd_4774			u:object_r:gpsd_prop:s0
 ctl.gpsdcl_4774			u:object_r:gpsd_prop:s0
 ctl.lhd_4774			u:object_r:gpsd_prop:s0
 ctl.lhdcl_4774			u:object_r:gpsd_prop:s0
+ctl.ipld			u:object_r:ipld_prop:s0
 huawei.check_root.		u:object_r:check_root_prop:s0
+hw.check.system                 u:object_r:check_system_prop:s0
 ctl.modematserver		u:object_r:modemlogcat_prop:s0
 sensor.dual.mode		u:object_r:hwcamcfgsvr_prop:s0
 sensor.otp.checksum		u:object_r:hwcamcfgsvr_prop:s0
@@ -120,7 +123,7 @@ reduce.sar.imsi.mnc		u:object_r:radio_prop:s0
 persist.sys.smart_power		u:object_r:powergenie_prop:s0
 hw.flash.disabled.by.low_temp   u:object_r:powergenie_prop:s0
 persist.sys.jankdb		u:object_r:jankservice_prop:s0
-persist.sys.jankenable          u:object_r:jankservice_prop:s0
+systeminfo.enable               u:object_r:systeminfo_prop:s0
 persist.sys.huawei.debug.on	u:object_r:logcat_prop:s0
 persist.ims.			u:object_r:ims_prop:s0
 persist.ut. 			u:object_r:ims_prop:s0
@@ -140,12 +143,8 @@ sys.adb.authpass		u:object_r:authpass_prop:s0
 goldeneye.				u:object_r:goldeneye_prop:s0
 androidboot.start_services   u:object_r:recovery_prop:s0
 recovery.start_all_srv u:object_r:recovery_prop:s0
-camera.tunning.support        u:object_r:cameradump_prop:s0
-camera.tunning.dump        u:object_r:cameradump_prop:s0
-camera3.zsl.switch        u:object_r:cameradump_prop:s0
-camera.dump.raw2yuv        u:object_r:cameradump_prop:s0
-camera.fbcdraw.enable        u:object_r:cameradump_prop:s0
-#line 1 "device/hisi/common/sepolicy/hi6210sft/property_contexts"
+dumptool.				u:object_r:logcat_prop:s0
+#line 1 "device/hisi/sepolicy/hi6250/property_contexts"
 
-ctl.hostapd_bin					u:object_r:hi110x_prop:s0
-ctl.oam_app    					u:object_r:hi110x_prop:s0
+setup_hi110x_modules    u:object_r:hi110x_prop:s0
+ctl.shex		u:object_r:shex_prop:s0

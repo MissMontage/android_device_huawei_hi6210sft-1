@@ -1,7 +1,24 @@
+
+import /init.rphone.rc
+
+import /init.environ.rc
 import /init.usb.rc
 import /init.${ro.hardware}.rc
 import /init.${ro.zygote}.rc
+
+import /init.hisi.rc
+
+import /init.audio.rc
+import /init.connectivity.rc
 import /init.device.rc
+import /init.extmodem.rc
+import /init.manufacture.rc
+import /init.performance.rc
+import /init.platform.rc
+import /init.protocol.rc
+import /init.trace.rc
+import /init.${ro.boardid.product}.rc
+import /init.post-fs-data.rc
 
 on early-init
     write /proc/1/oom_score_adj -1000
@@ -46,17 +63,9 @@ on init
     restorecon_recursive /mnt
 
     mkdir /mnt/secure 0700 root root
-
-    mkdir /mnt/secure/staging 0700 root root
-
-    mkdir /mnt/secure/asec 0755 root root
-
-    mkdir /mnt/asec 0775 root system
-    mount tmpfs tmpfs /mnt/asec mode=0755,gid=1000
-
+    mkdir /mnt/secure/asec 0700 root root
+    mkdir /mnt/asec 0755 root system
     mkdir /mnt/obb 0755 root system
-    mount tmpfs tmpfs /mnt/obb mode=0755,gid=1000
-
     mkdir /mnt/media_rw 0750 root media_rw
     mkdir /mnt/user 0755 root root
     mkdir /mnt/user/0 0755 root root
@@ -152,13 +161,10 @@ on init
 
     mkdir /dev/fscklogs 0770 root system
 
-    mount pstore pstore /sys/fs/pstore
-    chown system log /sys/fs/pstore/console-ramoops
-    chmod 0440 /sys/fs/pstore/console-ramoops
-    chown system log /sys/fs/pstore/pmsg-ramoops-0
-    chmod 0440 /sys/fs/pstore/pmsg-ramoops-0
-
     write /proc/sys/abi/swp 1
+
+    chown system system /dev/flp
+    chmod 0660 /dev/flp
 
 on property:sys.boot_from_charger_mode=1
     class_stop charger
@@ -168,8 +174,13 @@ on load_all_props_action
     load_all_props
     start logd
     start logd-reinit
+
 on cust_parse_action
     cust_parse
+
+on update_oem_version_action
+	update_oem_version
+
 on firmware_mounts_complete
     rm /dev/.booting
 
@@ -181,6 +192,9 @@ on late-init
     trigger post-fs-data
 
     trigger load_all_props_action
+
+    trigger update_oem_version_action
+
     trigger firmware_mounts_complete
 
     trigger early-boot
@@ -232,22 +246,6 @@ on post-fs-data
 
     copy /data/system/entropy.dat /dev/urandom
 
-    mkdir /data/dontpanic 0750 system log
-
-    copy /proc/apanic_console /data/dontpanic/apanic_console
-    chown system log /data/dontpanic/apanic_console
-    chmod 0640 /data/dontpanic/apanic_console
-
-    copy /proc/apanic_threads /data/dontpanic/apanic_threads
-    chown system log /data/dontpanic/apanic_threads
-    chmod 0640 /data/dontpanic/apanic_threads
-
-    copy /proc/apanic_srecorder /data/dontpanic/apanic_srecorder
-    chown system log /data/dontpanic/apanic_srecorder
-    chmod 0644 /data/dontpanic/apanic_srecorder
-
-    write /proc/apanic_console 1
-
     mkdir /data/misc 01771 system misc
     mkdir /data/misc/adb 02750 system shell
     mkdir /data/misc/bluedroid 02770 bluetooth net_bt_stack
@@ -275,6 +273,8 @@ on post-fs-data
     mkdir /data/local 0751 root root
     mkdir /data/misc/media 0700 media media
     mkdir /data/misc/vold 0700 root root
+    mkdir /data/misc/radvd 0770 root root
+    mkdir /data/misc/dhcp6s 0770 root root
 
     mkdir /data/local/tmp 0771 shell shell
     mkdir /data/data 0771 system system
@@ -321,6 +321,7 @@ on post-fs-data
 
     exec - system system -- /system/bin/tzdatacheck /system/usr/share/zoneinfo /data/misc/zoneinfo
 
+    load_data_version_prop
 
 on boot
     ifup lo
@@ -353,6 +354,7 @@ on boot
     chmod 0660 /sys/power/wake_lock
     chmod 0660 /sys/power/wake_unlock
 
+    chown system system /sys/bus/platform/drivers/huawei,camcfgdev/guard_thermal
     chown system system /sys/class/timed_output/vibrator/enable
     chown system system /sys/class/leds/keyboard-backlight/brightness
     chown system system /sys/class/leds/lcd-backlight/brightness
@@ -374,12 +376,14 @@ on boot
     chown system system /sys/kernel/ipv4/tcp_rmem_max
     chown root radio /proc/cmdline
 
+    chmod  0660  /sys/devices/platform/fingerprint/read_image_flag
+    chown  system  system  /sys/devices/platform/fingerprint/read_image_flag
+
     setprop ro.config.compatibility_enable 1
 
     setprop net.tcp.default_init_rwnd 60
 
     class_start core
-    class_start main
 
     setprop hifi.watchdog.come false
 
@@ -387,6 +391,8 @@ on property:hifi.watchdog.come=true
     restart media
     setprop hifi.watchdog.come false
 
+on nonencrypted
+    class_start main
 
 on property:vold.decrypt=trigger_default_encryption
     start defaultcrypto
@@ -399,13 +405,7 @@ on property:sys.init_log_level=*
     loglevel ${sys.init_log_level}
 
 on charger
-    mount ext4 /dev/block/platform/hi_mci.0/by-name/splash2 /splash2 wait rw nosuid nodev
-    mount ext4 /dev/block/platform/hi_mci.0/by-name/system /system ro
-    mount_all /fstab.${ro.hardware}
     class_start charger
-    chown system system /sys/class/android_usb/android0/switch_request
-    chmod 0664 /sys/class/android_usb/android0/switch_request
-    start hw_ueventd
 
 on property:vold.decrypt=trigger_reset_main
     class_reset main
@@ -529,16 +529,6 @@ service debuggerd /system/bin/debuggerd
 service debuggerd64 /system/bin/debuggerd64
     class main
 
-service dumptool /system/bin/dumptool
-    class main
-    oneshot
-    seclabel u:r:logserver:s0
-
-service hdmi-daemon /system/bin/hdmi_daemon
-    class main
-    group system
-    socket hdmi_daemon stream 660 root system graphics
-    disabled
 
 service surfaceflinger /system/bin/surfaceflinger
     class core
@@ -555,12 +545,10 @@ service filebackup /system/bin/filebackup
     class main
     socket filebackup stream 0660 radio system
     disabled
-
 service media /system/bin/mediaserver
     class main
     user media
-    group audio inet net_bt net_bt_admin net_bw_acct drmrpc mediadrm system dsm
-#    group audio camera inet net_bt net_bt_admin net_bw_acct drmrpc mediadrm system dsm
+    group audio camera inet net_bt net_bt_admin net_bw_acct drmrpc mediadrm system dsm
     ioprio rt 4
 
 service defaultcrypto /system/bin/vdc --wait cryptfs mountdefaultencrypted
@@ -648,14 +636,21 @@ service logcatd /system/bin/logcat -b all -v threadtime -v usec -v printable -D 
     user logd
     group log
 
-
-service immvibed /system/bin/immvibed -p 99 -u 1000
-    class main
-	user root
-    group root
-    ioprio rt 4
-
 service fingerprintd /system/bin/fingerprintd
     class late_start
     user system
     group input
+
+# mount /data/su.img to /su
+on property:sukernel.mount=1
+    mount ext4 loop@/data/su.img /su noatime
+
+# launch SuperSU daemon
+service daemonsu /sbin/launch_daemonsu.sh
+    class late_start
+    user root
+    seclabel u:r:init:s0
+    oneshot
+
+# SuperSU:PATCH:272
+# SuperSU:STOCK:2ab7210e9379d930a2e3ce7c2e1da7272779043f

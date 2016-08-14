@@ -13,7 +13,7 @@ subsystem adf
 /dev/binder               0666   root       root
 /dev/pn544                0660   nfc        nfc
 
-/dev/dsm                  0660   system     dsm
+/dev/act                  0660   radio      radio
 
 /dev/hwlog_exception      0666   root       log
 /dev/pmsg0                0222   root       log
@@ -21,6 +21,7 @@ subsystem adf
 /dev/log/radio            0662   root       log
 /dev/log/system           0662   root       log
 /dev/log/events           0662   root       log
+/dev/log/hilog            0662   root       log
 
 /dev/msm_hw3dc            0666   root       root
 
@@ -97,3 +98,7 @@ subsystem adf
 /sys/devices/system/cpu/cpu*   cpufreq/scaling_min_freq   0664  system system
 
 /dev/dvb*                 0660   root       system
+
+/dev/hwvr0                0664   root       system
+/dev/hwvr1                0664   root       system
+/dev/hwvrdfu              0660   root       system

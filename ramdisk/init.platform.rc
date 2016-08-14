@@ -1,6 +1,4 @@
-on early-init
-
-write /sys/block/mmcblk0/queue/nr_requests 256
+ early-init
 
 on init
 
@@ -9,6 +7,7 @@ on init
 
     chmod 0660 /dev/hwlog_switch
     chown logd system /dev/hwlog_switch
+
 
     mkdir /sys/fs/cgroup/pids 0750 root system
     mount cgroup none /sys/fs/cgroup/pids pids
@@ -36,6 +35,9 @@ on post-fs
     chmod 0440 /dev/log/system_boot
     chmod 0440 /dev/log/radio_boot
 
+on charger
+    class_start core
+
 on post-fs-data
 
     mkdir /data/hwzd_logs
@@ -53,6 +55,12 @@ on post-fs-data
     chown root system /data/hisi_logs
     restorecon_recursive /data/hisi_logs
 
+    chown root system /sys/kernel/exmbist_test/test_entry
+    chmod 0664 /sys/kernel/exmbist_test/test_entry
+
+    chown root system /sys/kernel/exmbist_test/test_entry
+    chmod 0664 /sys/kernel/exmbist_test/test_result
+
 on early-boot
     mount debugfs /sys/kernel/debug /sys/kernel/debug mode=0775,gid=1000
 
@@ -61,12 +69,18 @@ on boot
     chown system system /dev/hwlog_tag
     chmod 0662 /dev/hwlog_jank
 
+    chmod 0660 /sys/class/hw_power/charger/charge_data/adc_conv_rate
+    chown system system /sys/class/hw_power/charger/charge_data/adc_conv_rate
     chmod 0660 /sys/class/hw_power/charger/charge_data/enable_charger
     chown system system /sys/class/hw_power/charger/charge_data/enable_charger
     chmod 0660 /sys/class/hw_power/charger/charge_data/iin_thermal
     chown system system /sys/class/hw_power/charger/charge_data/iin_thermal
+    chmod 0660 /sys/class/hw_power/charger/charge_data/iin_thermal_aux
+    chown system system /sys/class/hw_power/charger/charge_data/iin_thermal_aux
     chmod 0660 /sys/class/hw_power/charger/charge_data/ichg_thermal
     chown system system /sys/class/hw_power/charger/charge_data/ichg_thermal
+    chmod 0660 /sys/class/hw_power/charger/charge_data/ichg_thermal_aux
+    chown system system /sys/class/hw_power/charger/charge_data/ichg_thermal_aux
     chmod 0660 /sys/class/hw_power/charger/charge_data/regulation_voltage
     chown system system /sys/class/hw_power/charger/charge_data/regulation_voltage
     chmod 0660 /sys/class/hw_power/charger/charge_data/iin_runningtest
@@ -83,17 +97,8 @@ on boot
     chown system system /sys/class/hw_power/charger/charge_data/inputcurrent
     chmod 0660 /sys/class/hw_power/charger/charge_data/voltage_sys
     chown system system /sys/class/hw_power/charger/charge_data/voltage_sys
-    chmod 0660 /sys/class/hw_power/charger/charge_data/enable_hiz
-    chown system system /sys/class/hw_power/charger/charge_data/enable_hiz
-    chmod 0660 /sys/class/regulator/regulator.2/state
-    chown system system /sys/class/regulator/regulator.2/state
-    chmod 0660 /sys/class/regulator/regulator.3/state
-    chown system system /sys/class/regulator/regulator.3/state
-    chmod 0660 /sys/class/regulator/regulator.6/state
-    chown system system /sys/class/regulator/regulator.6/state
-    chmod 0660 /sys/kernel/pmic_mntn/pmic_peri_en_ctrl
-    chown system system /sys/kernel/pmic_mntn/pmic_peri_en_ctrl
-
+    chmod 0660 /sys/class/hw_power/charger/charge_data/vr_charger_type
+    chown system system /sys/class/hw_power/charger/charge_data/vr_charger_type
     chown root system /sys/devices/system/cpu/cpu0/cpufreq/msg_policy
     chmod 0660 /sys/devices/system/cpu/cpu0/cpufreq/msg_policy
 
@@ -149,7 +154,8 @@ on data_ready
     setprop sys.userdata_is_ready 1
     write /proc/post-fs-data 1
     write /proc/apanic_console 1
-    setprop sys.usb.config ${sys.usb.config}
+    setprop sys.usb.start_atdiag ${sys.usb.start_atdiag}
+    setprop sys.usb.start_modempcui ${sys.usb.start_modempcui}
 
 on data_not_ready
     setprop sys.userdata_is_ready 0
@@ -161,6 +167,14 @@ on property:bastet.service.enable=true
 
 service jankservice /system/bin/jankservice
     class late_start
+
+service systeminfo /system/bin/systeminfo
+    class main
+    user root
+    seclabel u:r:systeminfo:s0
+    disabled
+    oneshot	
+
 
 service fuse_sdcard1rw /system/bin/sdcard -u 1023 -g 1023 /mnt/media_rw/sdcard1 /storage/sdcard1
    class late_start
@@ -181,6 +195,13 @@ service preparesdservice /system/bin/vdc volume storagetosd
 
 on property:persist.sys.primarysd=*
    start preparesdservice
+
+service hiscoutmanager /system/bin/hiscoutmanager
+    class late_start
+    user root
+    group system
+    oneshot
+    seclabel u:r:hiscoutmanager:s0
 
 service logserver /system/bin/logserver
     class late_start
@@ -218,6 +239,13 @@ service applogcat /system/bin/logcat -v threadtime -r4096 -z 10 -n 5 -f /data/an
     disabled
     seclabel u:r:hisilogcat:s0
 
+service hilogcat /system/bin/hilogcat -r16 -z 10 -n 5 -f /data/android_logs/hilogcat-log
+    class late_start
+    user root
+    group system
+    disabled
+    seclabel u:r:hisilogcat:s0
+
 service rillogcat /system/bin/logcat -b radio -v threadtime -r4096 -z 5 -n 5 -f /data/android_logs/rillogcat-log
     class late_start
     user root
@@ -232,28 +260,42 @@ service kmsglogcat /sbin/kmsgcat -l -r 4096 -z 5 -n 5 -f /data/android_logs/kmsg
     disabled
     seclabel u:r:hisilogcat:s0
 
-service inputlogcat /system/bin/eventcat -lrt -k 1024 -z 5 -m 5 -f /data/android_logs/input-log
+service isplogcat /system/bin/isplogcat
     class late_start
     user root
     group system
     disabled
     seclabel u:r:hisilogcat:s0
 
-service chargelogcat /system/bin/chargelogcat -r 4096 -n 2 -z 1 -t 5 -p /data/android_logs/
+service inputlogcat /system/bin/eventcat -lrt -k 1024 -z 5 -m 5 -f /data/hwzd_logs/input-log/input-log
     class late_start
     user root
     group system
     disabled
     seclabel u:r:hisilogcat:s0
 
-service sleeplogcat /system/bin/sleeplogcat -t 2 -p /data/android_logs/ -f /system/etc/pwrlog.cfg
+service chargelogcat /system/bin/chargelogcat -r 4096 -n 5 -z 4 -t 5 -p /data/android_logs/
     class late_start
     user root
     group system
     disabled
     seclabel u:r:hisilogcat:s0
 
-service modemlogcat /system/bin/modemlogcat_lte -l
+service sleeplogcat /system/bin/sleeplogcat -t 2 -p /data/android_logs/sleeplog/ -f /system/etc/pwrlog.cfg
+    class late_start
+    user root
+    group system
+    disabled
+    seclabel u:r:hisilogcat:s0
+
+service eventslogcat /system/bin/logcat -b events -v threadtime -r4096 -z 2 -n 2 -f /data/android_logs/eventslogcat-log
+    class late_start
+    user root
+    group system
+    disabled
+    seclabel u:r:hisilogcat:s0
+
+service modemlogcat /system/bin/modemlogcat_lte -z -l
     class late_start
     user root
     group system
@@ -288,8 +330,13 @@ service stop_ddrtest /system/bin/do_ddrtest
 
 service thermal-daemon /system/bin/thermal-daemon
     class main
-    user system 
+    user system
     group system
+
+service limit_current /system/bin/limit_current -l
+    user system
+    group system
+    disabled
 
 service hwpged /system/bin/hwpged
     class main
@@ -334,4 +381,3 @@ service bastetd /system/bin/bastetd
     class main
     user root
     group root
-
